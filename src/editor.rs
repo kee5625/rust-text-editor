@@ -1,13 +1,12 @@
 use core::cmp::min;
 use crossterm::event::{
-    read,
     Event::{self, Key},
-    KeyCode, KeyEvent, KeyEventKind, KeyModifiers,
+    KeyCode, KeyEvent, KeyEventKind, KeyModifiers, read,
 };
 
-mod view;
-mod terminal;
 mod buffer;
+mod terminal;
+mod view;
 use terminal::{Position, Size, Terminal};
 use view::View;
 
@@ -25,12 +24,19 @@ pub struct Editor {
 }
 
 impl Editor {
-
-    pub fn run(&mut self) {
-        Terminal::initialize().unwrap();
-        let result = self.repl();
-        Terminal::terminate().unwrap();
-        result.unwrap();
+    pub fn run(&mut self, filename: Option<&str>) -> Result<(), std::io::Error> {
+        match filename {
+            Some(file) => self
+                .view
+                .load(file)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e)),
+            None => {
+                Terminal::initialize().unwrap();
+                let result = self.repl();
+                Terminal::terminate().unwrap();
+                result
+            }
+        }
     }
 
     fn repl(&mut self) -> Result<(), std::io::Error> {
@@ -78,7 +84,7 @@ impl Editor {
         self.location = Location { x, y };
         Ok(())
     }
-    
+
     fn evaluate_event(&mut self, event: &Event) -> Result<(), std::io::Error> {
         if let Key(KeyEvent {
             code,

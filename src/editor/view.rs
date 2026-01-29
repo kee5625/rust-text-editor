@@ -1,14 +1,13 @@
+use super::buffer::Buffer;
 use super::terminal::{Size, Terminal};
 use std::io::Error;
-use super::buffer::{Buffer};
-
 
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Default)]
 pub struct View {
-    buffer: Buffer
+    buffer: Buffer,
 }
 
 impl View {
@@ -18,13 +17,13 @@ impl View {
         Terminal::print("Hello, World!\r\n")?;
         for current_row in 0..height {
             Terminal::clear_row()?;
-            
+
             if let Some(line) = self.buffer.lines.get(current_row) {
                 Terminal::print(line)?;
                 Terminal::print("\r\n")?;
                 continue;
             }
-            
+
             #[allow(clippy::integer_division)]
             if current_row == height / 3 {
                 Self::draw_welcome_message()?;
@@ -37,7 +36,7 @@ impl View {
         }
         Ok(())
     }
-    
+
     fn draw_welcome_message() -> Result<(), Error> {
         let mut welcome_message = format!("{NAME} editor -- version {VERSION}");
         let width = Terminal::size()?.width as usize;
@@ -50,9 +49,14 @@ impl View {
         Terminal::print(&welcome_message)?;
         Ok(())
     }
-    
+
     fn draw_empty_row() -> Result<(), Error> {
         Terminal::print("~")?;
+        Ok(())
+    }
+
+    pub fn load(&mut self, _filename: &str) -> Result<(), Error> {
+        // TODO: Implement file loading logic here
         Ok(())
     }
 }
