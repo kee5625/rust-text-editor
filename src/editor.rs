@@ -7,6 +7,7 @@ use crossterm::event::{
 
 mod view;
 mod terminal;
+mod buffer;
 use terminal::{Position, Size, Terminal};
 use view::View;
 
