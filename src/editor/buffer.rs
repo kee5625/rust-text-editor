@@ -1,5 +1,3 @@
-use std::io::Error;
-
 pub struct Buffer {
     pub lines: Vec<String>,
 }
