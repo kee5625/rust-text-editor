@@ -1,9 +1,11 @@
-use super::buffer::Buffer;
 use super::terminal::{Size, Terminal};
 use std::io::Error;
 
 const NAME: &str = env!("CARGO_PKG_NAME");
 const VERSION: &str = env!("CARGO_PKG_VERSION");
+
+mod buffer;
+use buffer::Buffer;
 
 #[derive(Default)]
 pub struct View {

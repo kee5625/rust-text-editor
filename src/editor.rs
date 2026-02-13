@@ -4,7 +4,7 @@ use crossterm::event::{
     KeyCode, KeyEvent, KeyEventKind, KeyModifiers, read,
 };
 
-mod buffer;
+
 mod terminal;
 mod view;
 use terminal::{Position, Size, Terminal};
