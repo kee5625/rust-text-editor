@@ -1,9 +1,11 @@
 use core::cmp::min;
 use crossterm::event::{
+    read,
     Event::{self, Key},
-    KeyCode, KeyEvent, KeyEventKind, KeyModifiers, read,
+    KeyCode, KeyEvent, KeyEventKind, KeyModifiers,
 };
 
+use std::{env, io::Error};
 
 mod terminal;
 mod view;
@@ -24,18 +26,18 @@ pub struct Editor {
 }
 
 impl Editor {
-    pub fn run(&mut self, filename: Option<&str>) -> Result<(), std::io::Error> {
-        match filename {
-            Some(file) => self
-                .view
-                .load(file)
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e)),
-            None => {
-                Terminal::initialize().unwrap();
-                let result = self.repl();
-                Terminal::terminate().unwrap();
-                result
-            }
+    pub fn run(&mut self) {
+        Terminal::initialize().unwrap();
+        self.handle_args();
+        let result = self.repl();
+        Terminal::terminate().unwrap();
+        result.unwrap();
+    }
+    
+    fn handle_args(&mut self) {
+        let args: Vec<String> = env::args().collect();
+        if let Some(file_name) = args.get(1) {
+            self.view.load(file_name);
         }
     }
 

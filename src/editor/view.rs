@@ -13,18 +13,12 @@ pub struct View {
 }
 
 impl View {
-    pub fn render(&self) -> Result<(), Error> {
+    pub fn render_welcome_screen() -> Result<(), Error> {
         let Size { height, .. } = Terminal::size()?;
         Terminal::clear_row()?;
         Terminal::print("Hello, World!\r\n")?;
         for current_row in 0..height {
             Terminal::clear_row()?;
-
-            if let Some(line) = self.buffer.lines.get(current_row) {
-                Terminal::print(line)?;
-                Terminal::print("\r\n")?;
-                continue;
-            }
 
             #[allow(clippy::integer_division)]
             if current_row == height / 3 {
@@ -35,6 +29,30 @@ impl View {
             if current_row + 1 < height {
                 Terminal::print("\r\n")?;
             }
+        }
+        Ok(())
+    }
+    
+    pub fn render_buffer(&self) -> Result<(), Error>{
+        let Size {height, ..} = Terminal::size()?;
+        
+        for current_row in 0..height{
+            Terminal::clear_row()?;
+            if let Some(line) = self.buffer.lines.get(current_row){
+                Terminal::print(line)?;
+                Terminal::print("\r\n")?;
+            } else {
+                Self::draw_empty_row()?;
+            }
+        }
+        Ok(())
+    }
+    
+    pub fn render(&self) -> Result<(), Error> {
+        if self.buffer.is_empty() {
+            Self::render_welcome_screen()?;
+        } else {
+            self.render_buffer()?;
         }
         Ok(())
     }
@@ -57,8 +75,9 @@ impl View {
         Ok(())
     }
 
-    pub fn load(&mut self, _filename: &str) -> Result<(), Error> {
-        // TODO: Implement file loading logic here
-        Ok(())
+    pub fn load(&mut self, _filename: &str) {
+        if let Ok(buffer) = Buffer::load(_filename) {
+            self.buffer = buffer;
+        }
     }
 }
