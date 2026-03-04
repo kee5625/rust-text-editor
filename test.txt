@@ -1,0 +1,40 @@
+Hello, hecto!
+==============
+
+This is a test file for the hecto text editor.
+Try scrolling around using the arrow keys!
+
+-- Basic Movement --
+  Arrow Up    : move cursor up
+  Arrow Down  : move cursor down
+  Arrow Left  : move cursor left
+  Arrow Right : move cursor right
+  Home        : jump to start of line
+  End         : jump to end of line
+  Page Up     : jump to top of screen
+  Page Down   : jump to bottom of screen
+  Ctrl+Q      : quit the editor
+
+-- Some Filler Text --
+
+The quick brown fox jumps over the lazy dog.
+Pack my box with five dozen liquor jugs.
+How valiantly did Atticus Finch argue for justice!
+Sphinx of black quartz, judge my vow.
+
+-- Numbers --
+
+1. First line
+2. Second line
+3. Third line
+4. Fourth line
+5. Fifth line
+
+-- A Little Poem --
+
+Rows of tildes line the screen,
+Where no text has ever been.
+A cursor blinks, awaiting thought,
+A text editor — finally wrought.
+
+-- End of File --
