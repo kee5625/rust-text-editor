@@ -1,3 +1,5 @@
+use crate::editor::terminal::Position;
+
 use super::terminal::{Size, Terminal};
 use std::io::Error;
 
@@ -39,9 +41,10 @@ impl View {
             Terminal::clear_row()?;
             if let Some(line) = self.buffer.lines.get(current_row) {
                 Terminal::print(line)?;
-                Terminal::print("\r\n")?;
+                Terminal::move_caret_to(Position {col:0, row: current_row + 1})?;
             } else {
                 Self::draw_empty_row()?;
+                Terminal::move_caret_to(Position { col: 0, row: current_row + 1 })?;
             }
         }
         Ok(())
