@@ -1,5 +1,4 @@
 use crate::editor::terminal::Position;
-
 use super::terminal::{Size, Terminal};
 use std::io::Error;
 
