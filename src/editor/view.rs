@@ -37,12 +37,13 @@ impl View {
     }
 
     pub fn render_buffer(&self) -> Result<(), Error> {
-        let Size { height, .. } = Terminal::size()?;
+        let Size { height, width } = Terminal::size()?;
 
         for current_row in 0..height {
             Terminal::clear_row()?;
             if let Some(line) = self.buffer.lines.get(current_row) {
-                Terminal::print(line)?;
+                let sliced = line.get(0..width).unwrap_or(line);
+                Terminal::print(sliced)?;
                 Terminal::move_caret_to(Position {col:0, row: current_row + 1})?;
             } else {
                 Self::draw_empty_row()?;
