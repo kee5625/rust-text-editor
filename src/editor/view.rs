@@ -7,9 +7,10 @@ const VERSION: &str = env!("CARGO_PKG_VERSION");
 mod buffer;
 use buffer::Buffer;
 
-#[derive(Default)]
 pub struct View {
     buffer: Buffer,
+    needs_redraw: bool,
+    size: Size
 }
 
 impl View {
@@ -36,6 +37,11 @@ impl View {
         Ok(())
     }
 
+    pub fn resize(&mut self, to: Size){
+        self.size = to;
+        self.needs_redraw = true;
+    }
+    
     pub fn render_buffer(&self) -> Result<(), Error> {
         let Size { height, width } = Terminal::size()?;
 
@@ -54,6 +60,9 @@ impl View {
     }
 
     pub fn render(&self) -> Result<(), Error> {
+        if self.needs_redraw {
+            self.resize(self.size)?;
+        }
         if self.buffer.is_empty() {
             Self::render_welcome_screen()?;
         } else {
@@ -83,6 +92,16 @@ impl View {
     pub fn load(&mut self, _filename: &str) {
         if let Ok(buffer) = Buffer::load(_filename) {
             self.buffer = buffer;
+        }
+    }
+}
+
+impl Default for View {
+    fn default() -> Self {
+        Self {
+            buffer: Buffer::default(),
+            needs_redraw: true,
+            size: Terminal::size().unwrap_or_default(),
         }
     }
 }

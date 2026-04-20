@@ -1,7 +1,7 @@
 use core::cmp::min;
 use crossterm::event::{
     read,
-    Event::{self, Key},
+    Event::{self, Key, Resize},
     KeyCode, KeyEvent, KeyEventKind, KeyModifiers,
 };
 
@@ -88,29 +88,38 @@ impl Editor {
     }
 
     fn evaluate_event(&mut self, event: &Event) -> Result<(), Error> {
-        if let Key(KeyEvent {
-            code,
-            modifiers,
-            kind: KeyEventKind::Press,
-            ..
-        }) = event
-        {
-            match code {
-                KeyCode::Char('q') if *modifiers == KeyModifiers::CONTROL => {
-                    self.should_quit = true;
+        match event {
+            Event::Key(KeyEvent { 
+                code,
+                modifiers,
+                kind: KeyEventKind::Press,
+                .. 
+            }) => {
+                match code {
+                    KeyCode::Char('q') if *modifiers == KeyModifiers::CONTROL => {
+                        self.should_quit = true;
+                    }
+                    KeyCode::Up
+                    | KeyCode::Down
+                    | KeyCode::Left
+                    | KeyCode::Right
+                    | KeyCode::PageDown
+                    | KeyCode::PageUp
+                    | KeyCode::End
+                    | KeyCode::Home => {
+                        self.move_point(*code)?;
+                    }
+                    _ => (),
                 }
-                KeyCode::Up
-                | KeyCode::Down
-                | KeyCode::Left
-                | KeyCode::Right
-                | KeyCode::PageDown
-                | KeyCode::PageUp
-                | KeyCode::End
-                | KeyCode::Home => {
-                    self.move_point(*code)?;
-                }
-                _ => (),
             }
+            Event::Resize(width, height ) => {
+                let new_size = Size {
+                    width: *width as usize,
+                    height: *height as usize,
+                };
+                self.view.resize(new_size);
+            }
+            _ => {}
         }
         Ok(())
     }
