@@ -1,5 +1,4 @@
-use crate::editor::terminal::Position;
-use super::terminal::{Size, Terminal};
+use super::terminal::{Position, Size, Terminal};
 use std::io::Error;
 
 const NAME: &str = env!("CARGO_PKG_NAME");
@@ -16,6 +15,7 @@ pub struct View {
 impl View {
     pub fn render_welcome_screen() -> Result<(), Error> {
         let Size { height, .. } = Terminal::size()?;
+        
         Terminal::clear_row()?;
         for current_row in 0..height {
             Terminal::clear_row()?;
@@ -27,7 +27,10 @@ impl View {
                 Self::draw_empty_row()?;
             }
             if current_row + 1 < height {
-                Terminal::print("\r\n")?;
+                Terminal::move_caret_to(Position { 
+                    col: 0, 
+                    row: current_row + 1, 
+                })?;
             }
         }
         Ok(())
