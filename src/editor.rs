@@ -1,7 +1,7 @@
 use core::cmp::min;
 use crossterm::event::{
     read,
-    Event::{self, Key, Resize},
+    Event,
     KeyCode, KeyEvent, KeyEventKind, KeyModifiers,
 };
 
@@ -38,11 +38,11 @@ impl Editor {
         if let Some(file_name) = args.get(1) {
             view.load(file_name);
         }
-        Ok(Self {
-            should_quit: false,
-            location: Location::default(),
-            view: View::default(),
-        })
+    Ok(Self {
+        should_quit: false,
+        location: Location::default(),
+        view,
+    })
     } 
     
     pub fn run(&mut self) {
@@ -52,7 +52,7 @@ impl Editor {
                 break;
             }
             match read() {
-                Ok(event) => self.evaluate_event(event),
+                Ok(event) => self.evaluate_event(&event),
                 Err(err) => {
                     #[cfg(debug_assertions)]
                     {
@@ -116,7 +116,7 @@ impl Editor {
                     | KeyCode::PageUp
                     | KeyCode::End
                     | KeyCode::Home => {
-                        self.move_point(code);
+                        self.move_point(*code);
                     }
                     _ => (),
                 }
@@ -134,7 +134,7 @@ impl Editor {
 
     fn refresh_screen(&mut self) {
         let _ = Terminal::hide_caret();
-        self.view.render();
+        let _ = self.view.render();
         let _ = Terminal::move_caret_to(Position {
             col: self.location.x,
             row: self.location.y,

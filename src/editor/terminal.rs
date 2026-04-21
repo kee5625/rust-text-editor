@@ -42,26 +42,14 @@ impl Terminal {
         disable_raw_mode()?;
         Ok(())
     }
-    
+
     pub fn enter_alternate_screen() -> Result<(), Error> {
         Self::queue_command(EnterAlternateScreen)?;
         Ok(())
     }
-    
-    pub fn clear_line() -> Result<(), Error> {
-        Self::queue_command(Clear(ClearType::CurrentLine))?;
-        Ok(())
-    }
-    
+
     pub fn leave_alternate_screen() -> Result<(), Error> {
         Self::queue_command(LeaveAlternateScreen)?;
-        Ok(())
-    }
-    
-    pub fn print_row(row: usize, line_text: &str) -> Result<(), Error> {
-        Self::move_caret_to(Position { row, col: 0 })?;
-        Self::clear_line()?;
-        Self::print(line_text)?;
         Ok(())
     }
 
@@ -76,18 +64,17 @@ impl Terminal {
     }
 
     pub fn move_caret_to(position: Position) -> Result<(), Error> {
-        Self::queue_command(MoveTo(position.col as u16, position.row as u16))?;
+        Self::queue_command(MoveTo(
+            position.col.try_into().unwrap_or(0),
+            position.row.try_into().unwrap_or(0)
+        ))?;
         Ok(())
     }
 
     pub fn size() -> Result<Size, Error> {
         let (width_u16, height_u16) = size()?;
-        // clippy::as_conversions: See doc above
-        #[allow(clippy::as_conversions)]
-        let height = height_u16 as usize;
-        // clippy::as_conversions: See doc above
-        #[allow(clippy::as_conversions)]
-        let width = width_u16 as usize;
+        let height = usize::from(height_u16);
+        let width = usize::from(width_u16);
         Ok(Size { height, width })
     }
 
@@ -110,8 +97,8 @@ impl Terminal {
         stdout().flush()?;
         Ok(())
     }
-    
-    fn queue_command<T:Command>(command: T) -> Result<(), Error> {
+
+    fn queue_command<T: Command>(command: T) -> Result<(), Error> {
         queue!(stdout(), command)?;
         Ok(())
     }

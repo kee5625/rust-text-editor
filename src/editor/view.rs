@@ -14,6 +14,11 @@ pub struct View {
 }
 
 impl View {
+    pub fn resize(&mut self, to: Size){
+        self.size = to;
+        self.needs_redraw = true;
+    }
+
     pub fn render_welcome_screen(&self) -> Result<(), Error> {
         let Size { height, .. } = self.size;
 
@@ -28,20 +33,15 @@ impl View {
                 Self::draw_empty_row()?;
             }
             if current_row + 1 < height {
-                Terminal::move_caret_to(Position { 
-                    col: 0, 
-                    row: current_row + 1, 
+                Terminal::move_caret_to(Position {
+                    col: 0,
+                    row: current_row + 1,
                 })?;
             }
         }
         Ok(())
     }
 
-    pub fn resize(&mut self, to: Size){
-        self.size = to;
-        self.needs_redraw = true;
-    }
-    
     pub fn render_buffer(&self) -> Result<(), Error> {
         let Size { height, width } = self.size;
 
